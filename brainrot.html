@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainrot</title>
+    <style>
+        #video-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 0px;
+            overflow-x: hidden;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+
+        div {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-grid"></div>
+    <script>
+        var tag = document.createElement('script');
+
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        const videoUrls = [
+            'https://www.youtube.com/watch?v=n_Dv4JMiwK8',
+            'https://www.youtube.com/watch?v=etp46Aca_UM',
+            'https://www.youtube.com/watch?v=VahKXgW2nXc',
+            'https://www.youtube.com/watch?v=ChBg4aowzX8',
+            'https://www.youtube.com/watch?v=I-IOm5cjCrs',
+            'https://www.youtube.com/watch?v=SB8BTaxt60I',
+            'https://www.youtube.com/watch?v=7-n_KPGIRco',
+            'https://www.youtube.com/watch?v=N72N8l_vVGA',
+            'https://www.youtube.com/watch?v=vXc0Jmn-frw',
+        ];
+
+        function createYouTubePlayer(videoId, container) {
+            const playerElement = document.createElement('div');
+            playerElement.id = videoId;
+            container.appendChild(playerElement);
+
+            var player = new YT.Player(videoId, {
+                videoId: videoId,
+                playerVars: {
+                    'playsinline': 1
+                },
+                events: {
+                    'onReady': event => {
+                        event.target.mute();
+                        event.target.playVideo();
+                    },
+                    'onStateChange': event => {
+                        if (event.data === 0) {
+                            event.target.seekTo(0);
+                            event.target.playVideo();
+                        }
+                    }
+                }
+            });
+        }
+
+        function getVideoIdFromUrl(url) {
+            const videoIdRegex = /^.*((youtu.be\/)|(\?v=)|(\&v=))([^#\&\?]*).*/;
+            const match = url.match(videoIdRegex);
+            return match && match[5].length === 11 ? match[5] : null;
+        }
+
+        function onYouTubeIframeAPIReady() {
+            const videoGrid = document.getElementById('video-grid');
+            videoUrls.forEach(url => {
+                const videoId = getVideoIdFromUrl(url);
+                if (videoId) {
+                    createYouTubePlayer(videoId, videoGrid);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
